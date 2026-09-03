@@ -227,6 +227,10 @@ body {
     transform: none;
 }
 
+.fullscreen-btn {
+    min-width: 90px;
+}
+
 .counter {
     min-width: 54px;
     text-align: center;
@@ -318,7 +322,11 @@ body {
         font-size: 11px;
     }
 
-    .counter {
+    .fullscreen-btn {
+    min-width: 90px;
+}
+
+.counter {
         min-width: 45px;
         font-size: 11px;
     }
@@ -373,6 +381,14 @@ body {
         class="control-btn"
         id="nextBtn">
         Next ›
+    </button>
+
+    <button
+        type="button"
+        class="control-btn fullscreen-btn"
+        id="fullscreenBtn"
+        aria-label="Enter full screen">
+        ⛶ Full Screen
     </button>
 
 </div>
@@ -462,6 +478,7 @@ const startBtn = document.getElementById("startBtn");
 
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 const counter = document.getElementById("counter");
 
@@ -720,6 +737,41 @@ prevBtn.addEventListener(
     "click",
     previousPage
 );
+
+
+/* =====================================================
+   FULL SCREEN
+===================================================== */
+
+function updateFullscreenButton() {
+    if (!fullscreenBtn) return;
+
+    if (document.fullscreenElement) {
+        fullscreenBtn.textContent = "⛶ Exit Full Screen";
+        fullscreenBtn.setAttribute("aria-label", "Exit full screen");
+    } else {
+        fullscreenBtn.textContent = "⛶ Full Screen";
+        fullscreenBtn.setAttribute("aria-label", "Enter full screen");
+    }
+}
+
+async function toggleFullscreen() {
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
+    } catch (error) {
+        console.log("Full screen could not start:", error);
+    }
+    updateFullscreenButton();
+}
+
+if (fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", toggleFullscreen);
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+}
 
 
 /* =====================================================
