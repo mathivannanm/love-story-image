@@ -227,9 +227,6 @@ body {
     transform: none;
 }
 
-.fullscreen-btn {
-    min-width: 90px;
-}
 
 .counter {
     min-width: 54px;
@@ -296,12 +293,29 @@ body {
     background: rgba(255,255,255,.18);
 }
 
-/* ---------- Mobile ---------- */
+/* ---------- Mobile Fullscreen ---------- */
+
+html:fullscreen,
+html:-webkit-full-screen,
+body:fullscreen,
+body:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
 
 @media (max-width: 600px) {
     .book {
         width: 96vw;
         height: 91vh;
+        max-height: 100%;
+    }
+
+    :fullscreen .book,
+    :-webkit-full-screen .book {
+        width: 96vw;
+        height: 96vh;
     }
 
     .hint {
@@ -383,13 +397,7 @@ body {
         Next ›
     </button>
 
-    <button
-        type="button"
-        class="control-btn fullscreen-btn"
-        id="fullscreenBtn"
-        aria-label="Enter full screen">
-        ⛶ Full Screen
-    </button>
+
 
 </div>
 
@@ -478,7 +486,6 @@ const startBtn = document.getElementById("startBtn");
 
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
-const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 const counter = document.getElementById("counter");
 
@@ -570,6 +577,28 @@ function playMusic() {
 ===================================================== */
 
 function startStory() {
+
+    // Enter fullscreen immediately from the Start button click.
+    // This works on desktop and supported mobile browsers.
+    try {
+        if (!document.fullscreenElement) {
+            const root = document.documentElement;
+
+            if (root.requestFullscreen) {
+                const fullscreenRequest = root.requestFullscreen({ navigationUI: "hide" });
+                if (fullscreenRequest && fullscreenRequest.catch) {
+                    fullscreenRequest.catch(function(error) {
+                        console.log("Fullscreen was not allowed by the browser:", error);
+                    });
+                }
+            } else if (root.webkitRequestFullscreen) {
+                // Safari / older WebKit fallback where available.
+                root.webkitRequestFullscreen();
+            }
+        }
+    } catch (error) {
+        console.log("Fullscreen is not supported on this browser:", error);
+    }
 
     startScreen.style.display = "none";
 
@@ -737,41 +766,6 @@ prevBtn.addEventListener(
     "click",
     previousPage
 );
-
-
-/* =====================================================
-   FULL SCREEN
-===================================================== */
-
-function updateFullscreenButton() {
-    if (!fullscreenBtn) return;
-
-    if (document.fullscreenElement) {
-        fullscreenBtn.textContent = "⛶ Exit Full Screen";
-        fullscreenBtn.setAttribute("aria-label", "Exit full screen");
-    } else {
-        fullscreenBtn.textContent = "⛶ Full Screen";
-        fullscreenBtn.setAttribute("aria-label", "Enter full screen");
-    }
-}
-
-async function toggleFullscreen() {
-    try {
-        if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-        } else {
-            await document.exitFullscreen();
-        }
-    } catch (error) {
-        console.log("Full screen could not start:", error);
-    }
-    updateFullscreenButton();
-}
-
-if (fullscreenBtn) {
-    fullscreenBtn.addEventListener("click", toggleFullscreen);
-    document.addEventListener("fullscreenchange", updateFullscreenButton);
-}
 
 
 /* =====================================================
