@@ -346,7 +346,7 @@ body {
 ===================================================== -->
 
 <div class="hint">
-    Love You Ammu ❤️
+    Love You Ammu ❤️ • Click Next / Prev to turn pages
 </div>
 
 
@@ -362,15 +362,7 @@ body {
         id="prevBtn">
         ‹ Prev
     </button>
-
-    <button
-        type="button"
-        class="control-btn"
-        id="playPauseBtn">
-        ▶ Play
-    </button>
-
-    <div
+<div
         class="counter"
         id="counter">
         1 / 16
@@ -441,6 +433,7 @@ const PAGES = [
     "page-03.png",
     "page-04.png",
     "page-05.png",
+    "page-55.png",
     "page-06.png",
     "page-07.png",
     "page-08.png",
@@ -454,7 +447,6 @@ const PAGES = [
     "page-16.png"
 ];
 
-const HOLD_TIME = 5000;
 const TURN_TIME = 950;
 
 
@@ -470,7 +462,6 @@ const startBtn = document.getElementById("startBtn");
 
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
-const playPauseBtn = document.getElementById("playPauseBtn");
 
 const counter = document.getElementById("counter");
 
@@ -480,9 +471,7 @@ const counter = document.getElementById("counter");
 ===================================================== */
 
 let currentPage = 0;
-let isPlaying = false;
 let isTurning = false;
-let timer = null;
 
 
 /* =====================================================
@@ -540,48 +529,6 @@ function updateUI() {
 
     nextBtn.disabled =
         currentPage === PAGES.length - 1 || isTurning;
-
-    if (isPlaying) {
-        playPauseBtn.textContent = "❚❚ Pause";
-    } else {
-        playPauseBtn.textContent = "▶ Play";
-    }
-}
-
-
-/* =====================================================
-   CLEAR TIMER
-===================================================== */
-
-function clearStoryTimer() {
-
-    if (timer !== null) {
-        clearTimeout(timer);
-        timer = null;
-    }
-}
-
-
-/* =====================================================
-   START TIMER
-===================================================== */
-
-function startStoryTimer() {
-
-    clearStoryTimer();
-
-    if (!isPlaying) {
-        return;
-    }
-
-    if (currentPage >= PAGES.length - 1) {
-        stopStory();
-        return;
-    }
-
-    timer = setTimeout(function() {
-        goToPage(currentPage + 1, "forward");
-    }, HOLD_TIME);
 }
 
 
@@ -607,54 +554,12 @@ function playMusic() {
 
 function startStory() {
 
-    isPlaying = true;
-
     startScreen.style.display = "none";
 
+    // Music starts once and keeps looping continuously.
     playMusic();
 
     updateUI();
-
-    startStoryTimer();
-}
-
-
-/* =====================================================
-   STOP / PAUSE STORY
-===================================================== */
-
-function stopStory() {
-
-    isPlaying = false;
-
-    clearStoryTimer();
-
-    music.pause();
-
-    updateUI();
-}
-
-
-/* =====================================================
-   TOGGLE PLAY / PAUSE
-===================================================== */
-
-function togglePlayPause() {
-
-    if (isPlaying) {
-
-        stopStory();
-
-    } else {
-
-        isPlaying = true;
-
-        playMusic();
-
-        updateUI();
-
-        startStoryTimer();
-    }
 }
 
 
@@ -675,8 +580,6 @@ function goToPage(targetPage, direction) {
     ) {
         return;
     }
-
-    clearStoryTimer();
 
     isTurning = true;
 
@@ -752,9 +655,6 @@ function goToPage(targetPage, direction) {
 
         updateUI();
 
-        if (isPlaying) {
-            startStoryTimer();
-        }
 
     }, TURN_TIME);
 }
@@ -811,11 +711,6 @@ startBtn.addEventListener(
     startStory
 );
 
-playPauseBtn.addEventListener(
-    "click",
-    togglePlayPause
-);
-
 nextBtn.addEventListener(
     "click",
     nextPage
@@ -841,13 +736,6 @@ document.addEventListener(
 
         if (event.key === "ArrowLeft") {
             previousPage();
-        }
-
-        if (event.key === " " || event.code === "Space") {
-
-            event.preventDefault();
-
-            togglePlayPause();
         }
     }
 );
