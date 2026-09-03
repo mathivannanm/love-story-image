@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey of My Love ❤️</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: #080808;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    color: white;
+}
+
+/* ---------- Background ---------- */
+
+.stage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center, #292929 0%, #111 62%, #050505 100%);
+    perspective: 2200px;
+}
+
+/* ---------- Book ---------- */
+
+.book {
+    position: relative;
+    width: min(92vw, 620px);
+    height: min(94vh, 930px);
+    transform-style: preserve-3d;
+}
+
+.page {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #111;
+    border-radius: 5px 13px 13px 5px;
+
+    box-shadow:
+        0 14px 45px rgba(0, 0, 0, .65),
+        0 0 0 1px rgba(255, 255, 255, .08);
+
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.page img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.current {
+    z-index: 20;
+}
+
+.next-page {
+    z-index: 10;
+}
+
+.turn-forward {
+    z-index: 30;
+    transform-origin: left center;
+    animation: turnForward .95s cubic-bezier(.65, .02, .25, 1) forwards;
+}
+
+@keyframes turnForward {
+    0% {
+        transform: rotateY(0deg);
+        filter: brightness(1);
+    }
+
+    45% {
+        filter: brightness(.8);
+    }
+
+    100% {
+        transform: rotateY(-180deg);
+        filter: brightness(.55);
+    }
+}
+
+.turn-back {
+    z-index: 30;
+    transform-origin: right center;
+    animation: turnBack .95s cubic-bezier(.65, .02, .25, 1) forwards;
+}
+
+@keyframes turnBack {
+    0% {
+        transform: rotateY(-180deg);
+        filter: brightness(.55);
+    }
+
+    100% {
+        transform: rotateY(0deg);
+        filter: brightness(1);
+    }
+}
+
+/* ---------- Subtle page shade ---------- */
+
+.page-shade {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.12),
+            transparent 15%,
+            transparent 85%,
+            rgba(0,0,0,.12)
+        );
+}
+
+/* ---------- Top hint ---------- */
+
+.hint {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+
+    padding: 7px 12px;
+    border-radius: 999px;
+
+    color: rgba(255,255,255,.82);
+    background: rgba(0,0,0,.08);
+    border: 1px solid rgba(255,255,255,.12);
+
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    font: 12px Arial, sans-serif;
+    text-shadow: 0 1px 4px rgba(0,0,0,.9);
+
+    pointer-events: none;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 7px;
+    border-radius: 999px;
+
+    /* Transparent so page details remain visible */
+    background: rgba(0,0,0,.06);
+    border: 1px solid rgba(255,255,255,.14);
+
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+
+    box-shadow: 0 4px 18px rgba(0,0,0,.12);
+}
+
+.control-btn {
+    min-width: 70px;
+    padding: 7px 11px;
+
+    color: white;
+    background: rgba(255,255,255,.06);
+
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    font: 13px Arial, sans-serif;
+    text-shadow: 0 1px 4px rgba(0,0,0,.9);
+
+    transition:
+        background .2s ease,
+        transform .15s ease,
+        border-color .2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255,255,255,.16);
+    border-color: rgba(255,255,255,.4);
+}
+
+.control-btn:active {
+    transform: scale(.94);
+}
+
+.control-btn:disabled {
+    opacity: .35;
+    cursor: default;
+    transform: none;
+}
+
+.counter {
+    min-width: 54px;
+    text-align: center;
+    color: rgba(255,255,255,.92);
+    font: 13px Arial, sans-serif;
+    text-shadow: 0 1px 5px rgba(0,0,0,.95);
+}
+
+/* ---------- Start screen ---------- */
+
+.start-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,.84);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+.start-card {
+    width: min(90vw, 380px);
+    padding: 30px 26px;
+    text-align: center;
+
+    background: rgba(24,24,24,.96);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 20px;
+
+    box-shadow: 0 20px 70px rgba(0,0,0,.7);
+}
+
+.start-card h1 {
+    margin: 0 0 10px;
+    font-size: 27px;
+}
+
+.start-card p {
+    margin: 0 0 20px;
+    color: #ccc;
+    font: 14px/1.5 Arial, sans-serif;
+}
+
+.start-button {
+    padding: 11px 20px;
+
+    color: white;
+    background: rgba(255,255,255,.1);
+
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    font: 15px Arial, sans-serif;
+}
+
+.start-button:hover {
+    background: rgba(255,255,255,.18);
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 600px) {
+    .book {
+        width: 96vw;
+        height: 91vh;
+    }
+
+    .hint {
+        top: 8px;
+        font-size: 10px;
+        padding: 6px 9px;
+    }
+
+    .controls {
+        bottom: 9px;
+        gap: 4px;
+        padding: 4px 5px;
+    }
+
+    .control-btn {
+        min-width: 58px;
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+
+    .counter {
+        min-width: 45px;
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     STORY AREA
+===================================================== -->
+
+<main class="stage">
+
+    <div class="book" id="book"></div>
+
+    <div class="page-shade"></div>
+
+</main>
+
+
+<!-- =====================================================
+     TOP MESSAGE
+===================================================== -->
+
+<div class="hint">
+    Love You Ammu ❤️
+</div>
+
+
+<!-- =====================================================
+     CONTROLS
+===================================================== -->
+
+<div class="controls">
+
+    <button
+        type="button"
+        class="control-btn"
+        id="prevBtn">
+        ‹ Prev
+    </button>
+
+    <button
+        type="button"
+        class="control-btn"
+        id="playPauseBtn">
+        ▶ Play
+    </button>
+
+    <div
+        class="counter"
+        id="counter">
+        1 / 16
+    </div>
+
+    <button
+        type="button"
+        class="control-btn"
+        id="nextBtn">
+        Next ›
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     START SCREEN
+===================================================== -->
+
+<section
+    class="start-screen"
+    id="startScreen">
+
+    <div class="start-card">
+
+        <h1>
+            Journey of My Love ❤️
+        </h1>
+
+        <p>
+            Miss Yuvarani 💕
+        </p>
+
+        <button
+            type="button"
+            class="start-button"
+            id="startBtn">
+            Start Story & Music
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MUSIC
+===================================================== -->
+
+<audio
+    id="music"
+    src="music.mp3"
+    preload="auto"
+    loop>
+</audio>
+
+
+<script>
+"use strict";
+
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+const PAGES = [
+    "page-01.png",
+    "page-02.png",
+    "page-03.png",
+    "page-04.png",
+    "page-05.png",
+    "page-06.png",
+    "page-07.png",
+    "page-08.png",
+    "page-09.png",
+    "page-10.png",
+    "page-11.png",
+    "page-12.png",
+    "page-13.png",
+    "page-14.png",
+    "page-15.png",
+    "page-16.png"
+];
+
+const HOLD_TIME = 5000;
+const TURN_TIME = 950;
+
+
+/* =====================================================
+   DOM ELEMENTS
+===================================================== */
+
+const book = document.getElementById("book");
+const music = document.getElementById("music");
+
+const startScreen = document.getElementById("startScreen");
+const startBtn = document.getElementById("startBtn");
+
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const playPauseBtn = document.getElementById("playPauseBtn");
+
+const counter = document.getElementById("counter");
+
+
+/* =====================================================
+   STORY STATE
+===================================================== */
+
+let currentPage = 0;
+let isPlaying = false;
+let isTurning = false;
+let timer = null;
+
+
+/* =====================================================
+   CREATE PAGE ELEMENT
+===================================================== */
+
+function createPage(index) {
+
+    const page = document.createElement("div");
+
+    page.className = "page";
+
+    const image = document.createElement("img");
+
+    image.src = PAGES[index];
+    image.alt = "Story page " + (index + 1);
+
+    image.draggable = false;
+
+    page.appendChild(image);
+
+    return page;
+}
+
+
+/* =====================================================
+   DISPLAY INITIAL PAGE
+===================================================== */
+
+function initializeStory() {
+
+    book.innerHTML = "";
+
+    const firstPage = createPage(0);
+
+    firstPage.classList.add("current");
+
+    book.appendChild(firstPage);
+
+    updateUI();
+}
+
+
+/* =====================================================
+   UPDATE UI
+===================================================== */
+
+function updateUI() {
+
+    counter.textContent =
+        (currentPage + 1) + " / " + PAGES.length;
+
+    prevBtn.disabled =
+        currentPage === 0 || isTurning;
+
+    nextBtn.disabled =
+        currentPage === PAGES.length - 1 || isTurning;
+
+    if (isPlaying) {
+        playPauseBtn.textContent = "❚❚ Pause";
+    } else {
+        playPauseBtn.textContent = "▶ Play";
+    }
+}
+
+
+/* =====================================================
+   CLEAR TIMER
+===================================================== */
+
+function clearStoryTimer() {
+
+    if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+    }
+}
+
+
+/* =====================================================
+   START TIMER
+===================================================== */
+
+function startStoryTimer() {
+
+    clearStoryTimer();
+
+    if (!isPlaying) {
+        return;
+    }
+
+    if (currentPage >= PAGES.length - 1) {
+        stopStory();
+        return;
+    }
+
+    timer = setTimeout(function() {
+        goToPage(currentPage + 1, "forward");
+    }, HOLD_TIME);
+}
+
+
+/* =====================================================
+   PLAY MUSIC
+===================================================== */
+
+function playMusic() {
+
+    const promise = music.play();
+
+    if (promise !== undefined) {
+        promise.catch(function(error) {
+            console.log("Music could not start:", error);
+        });
+    }
+}
+
+
+/* =====================================================
+   START STORY
+===================================================== */
+
+function startStory() {
+
+    isPlaying = true;
+
+    startScreen.style.display = "none";
+
+    playMusic();
+
+    updateUI();
+
+    startStoryTimer();
+}
+
+
+/* =====================================================
+   STOP / PAUSE STORY
+===================================================== */
+
+function stopStory() {
+
+    isPlaying = false;
+
+    clearStoryTimer();
+
+    music.pause();
+
+    updateUI();
+}
+
+
+/* =====================================================
+   TOGGLE PLAY / PAUSE
+===================================================== */
+
+function togglePlayPause() {
+
+    if (isPlaying) {
+
+        stopStory();
+
+    } else {
+
+        isPlaying = true;
+
+        playMusic();
+
+        updateUI();
+
+        startStoryTimer();
+    }
+}
+
+
+/* =====================================================
+   GO TO PAGE
+===================================================== */
+
+function goToPage(targetPage, direction) {
+
+    if (isTurning) {
+        return;
+    }
+
+    if (
+        targetPage < 0 ||
+        targetPage >= PAGES.length ||
+        targetPage === currentPage
+    ) {
+        return;
+    }
+
+    clearStoryTimer();
+
+    isTurning = true;
+
+    const oldPage =
+        book.querySelector(".page.current");
+
+    const newPage =
+        createPage(targetPage);
+
+    newPage.classList.add("next-page");
+
+    book.appendChild(newPage);
+
+    /*
+       Force browser to render the new page
+       before starting animation.
+    */
+    void newPage.offsetWidth;
+
+    if (direction === "back") {
+
+        /*
+           Previous page starts on the right.
+        */
+
+        newPage.style.transform =
+            "rotateY(-180deg)";
+
+        newPage.style.transformOrigin =
+            "right center";
+
+        oldPage.style.zIndex = "10";
+
+        newPage.classList.remove("next-page");
+        newPage.classList.add("turn-back");
+
+    } else {
+
+        /*
+           Next page:
+           current page turns from left to right.
+        */
+
+        newPage.classList.remove("next-page");
+
+        oldPage.classList.remove("current");
+        oldPage.classList.add("turn-forward");
+
+    }
+
+    currentPage = targetPage;
+
+    updateUI();
+
+
+    /*
+       Wait for page-turn animation.
+    */
+
+    setTimeout(function() {
+
+        if (oldPage && oldPage.parentNode) {
+            oldPage.remove();
+        }
+
+        newPage.className = "page current";
+
+        newPage.style.transform = "";
+        newPage.style.transformOrigin = "";
+        newPage.style.zIndex = "";
+
+        isTurning = false;
+
+        updateUI();
+
+        if (isPlaying) {
+            startStoryTimer();
+        }
+
+    }, TURN_TIME);
+}
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextPage() {
+
+    if (isTurning) {
+        return;
+    }
+
+    if (currentPage >= PAGES.length - 1) {
+        return;
+    }
+
+    goToPage(
+        currentPage + 1,
+        "forward"
+    );
+}
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+function previousPage() {
+
+    if (isTurning) {
+        return;
+    }
+
+    if (currentPage <= 0) {
+        return;
+    }
+
+    goToPage(
+        currentPage - 1,
+        "back"
+    );
+}
+
+
+/* =====================================================
+   BUTTON EVENTS
+===================================================== */
+
+startBtn.addEventListener(
+    "click",
+    startStory
+);
+
+playPauseBtn.addEventListener(
+    "click",
+    togglePlayPause
+);
+
+nextBtn.addEventListener(
+    "click",
+    nextPage
+);
+
+prevBtn.addEventListener(
+    "click",
+    previousPage
+);
+
+
+/* =====================================================
+   KEYBOARD CONTROLS
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "ArrowRight") {
+            nextPage();
+        }
+
+        if (event.key === "ArrowLeft") {
+            previousPage();
+        }
+
+        if (event.key === " " || event.code === "Space") {
+
+            event.preventDefault();
+
+            togglePlayPause();
+        }
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+initializeStory();
+
+</script>
+
+</body>
+</html>
